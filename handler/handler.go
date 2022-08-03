@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,5 +19,30 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, string(data))
 	} else if r.Method == "POST" {
 		//接受文件流即存储到本地目录
+		file, head, err := r.FormFile("file")
+		if err != nil {
+			fmt.Printf("Failed to get data,err:%s\n", err.Error())
+			return
+		}
+		defer file.Close()
+
+		newFile, err := os.Create("D:/tmp/" + head.Filename)
+		if err != nil {
+			fmt.Printf("Failed to create file,err:%s\n", err.Error())
+			return
+		}
+		defer newFile.Close()
+
+		_, err = io.Copy(newFile, file)
+		if err != nil {
+			fmt.Printf("Failed to save data into file,err:%s\n", err.Error())
+			return
+		}
+		http.Redirect(w, r, "/file/upload/suc", http.StatusFound)
 	}
+}
+
+// UploadSucHandler : 上传已完成
+func UploadSucHandler(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Upload finished!")
 }
