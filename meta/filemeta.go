@@ -28,6 +28,7 @@ func GetFileMeta(fileSha1 string) FileMeta {
 	return fileMetas[fileSha1]
 }
 
+//GetLastFileMetas 获取批量的文件元信息列表
 func GetLastFileMetas(count int) []FileMeta {
 	fMetaArray := make([]FileMeta, len(fileMetas))
 	for _, v := range fileMetas {
@@ -36,4 +37,8 @@ func GetLastFileMetas(count int) []FileMeta {
 
 	sort.Sort(ByUploadTime(fMetaArray))
 	return fMetaArray[0:count]
+}
+
+func RemoveFileMeta(fileSha1 string) {
+	delete(fileMetas, fileSha1)
 }
