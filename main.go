@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-NetDrive/handler"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -15,6 +16,16 @@ func main() {
 	http.HandleFunc("/file/delete", handler.FileDeleteHandler)
 	http.HandleFunc("/file/update", handler.FileMetaUpdateHandler)
 	http.HandleFunc("/user/signup", handler.SignupHandler)
+	http.HandleFunc("/user/signin", handler.SignInHandler)
+	http.HandleFunc("/user/home", func(w http.ResponseWriter, r *http.Request) {
+		data, err := ioutil.ReadFile(".")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write(data)
+		return
+	})
 	err := http.ListenAndServe(":8080", nil)
 
 	if err != nil {
